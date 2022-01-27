@@ -1,5 +1,8 @@
 # Signature for input and output (the LaTeX symbols can be changed to agree with other conventions)
 
+from IPython.display import display, Math
+import time
+
 # Constant operation symbols
 Cons="c"; Cond="d"; Iden="1"; Zero="0"; Bot="\\bot"; Top="\\top"
 

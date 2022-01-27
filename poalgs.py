@@ -223,7 +223,7 @@ ba=dlat+["x'v x=t","x'^x=b"]
 uo=[]
 axioms=[po,jsl,msl,lat,dlat,to,ba,uo]
 
-def fd(cl,info=True,f=fam,new_ax=None):
+def fd(cl,info=True,new_ax=None):
     try:
         ax = [p9out(parse(e)) for e in fulldefinition(cl)]
     except:
@@ -235,7 +235,7 @@ def fd(cl,info=True,f=fam,new_ax=None):
         print(ch_axioms+ax)
     return ch_axioms+ax
 
-def finespectrum(cl,n,info=True,f=fam,new_ax=None): 
+def finespectrum(cl,n,info=True,new_ax=None): 
   # call Prover9 on the translated full definition of cl and find the fine spectrum up to n
     if info: print(cl)
     ax = fd(cl,new_ax)
@@ -245,7 +245,7 @@ def finespectrum(cl,n,info=True,f=fam,new_ax=None):
     if info: print("Time: {:.2f}".format(time.time()-t), "sec")
     return [len(x) for x in a]
 
-def allclassposets(st=latex_st): #return list of tikz diagrams
+def tz_posets(st): #return list of tikz diagrams
     return re.findall(r"(\\begin{tikzpicture}\[xscale=1.*?\\end{tikzpicture}\n)",latex_st,flags=re.DOTALL)
 
 def allnodes(st): #return list of node names in st

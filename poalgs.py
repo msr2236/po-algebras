@@ -223,9 +223,6 @@ ba=dlat+["x'v x=t","x'^x=b"]
 uo=[]
 axioms=[po,jsl,msl,lat,dlat,to,ba,uo]
 
-cli = [allclasses(chapter(i)) for i in range(2,10)]
-fam = {x:cx for cx in range(8) for x in cli[cx]}
-
 def fd(cl,info=True,f=fam,new_ax=None):
     try:
         ax = [p9out(parse(e)) for e in fulldefinition(cl)]

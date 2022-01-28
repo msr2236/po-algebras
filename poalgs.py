@@ -6,7 +6,7 @@ import time
 FOLang = { #Constant operation symbols
 "c":(0,"c"), "d":(0,"d"), "e":(0,"e"), "0":(0,"zero"), "1":(0,"one"), "\\bot":(0,"bot"), "\\top":(0,"top"),
 #Logical connectives 
-"\\iff":(1,"==", <-> ), "\\implies":(2,"<="," -> "), "\\text{ or }":(3," or ","|"), "\\text{ and }":(4," and ","&"), "\\neg":(5," not "),
+"\\iff":(1,"=="," <-> "), "\\implies":(2,"<="," -> "), "\\text{ or }":(3," or ","|"), "\\text{ and }":(4," and ","&"), "\\neg":(5," not "),
 # Quantifiers
 "\\forall":(6," all","all "), "\\exists":(6," any","exists "),
 # Infix relation symbols

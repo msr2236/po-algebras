@@ -3,6 +3,26 @@
 from IPython.display import display, Math
 import time
 
+FOLang = { #Constant operation symbols
+"c":(0,"c"), "d":(0,"d"), "e":(0,"e"), "0":(0,"zero"), "1":(0,"one"), "\\bot":(0,"bot"), "\\top":(0,"top"),
+#Logical connectives 
+"\\iff":(1,"==", <-> ), "\\implies":(2,"<="," -> "), "\\text{ or }":(3," or ","|"), "\\text{ and }":(4," and ","&"), "\\neg":(5," not "),
+# Quantifiers
+"\\forall":(6," all","all "), "\\exists":(6," any","exists "),
+# Infix relation symbols
+"\\le":(7,"le","<="), "\\ge":(7,"ge",">="), "=":(7,"=="), "\\ne":(7,"!=","!="),
+# Infix operation symbols
+"\\to":(8,"to","->"), "\\leftarrow":(8,"leftarrow"), "\\vee":(9,"j"," v "), "\\wedge":(9,"m","^"),
+"+":(10,"p"), "\\oplus":(10,"oplus"), "\\ominus":(10,"ominus"), "/":(11,"rd"), "\\backslash":(11,"ld"),
+"\\cdot":(12,"cdot"), "\\circ":(12,"circ"), "\\odot":(12,"odot"), "*":(12,"t"),
+#Prefix unary operation symbols
+"f":(13,"f"), "g":(13,"g"), "\\sim":(13,"sim","~"), "-":(13,"minus"), "\\diamond":(13,"dia","dia"), "\\box":(13,"box"),
+#Postfix unary operation symbols
+"^*":(14,"star"), "^{-1}":(14,"inv","inv"), "\\smallsmile":(14,"conv","conv"), "'":(14,"pr")
+}
+Vars = ["x","y","z","u","v","w"]
+for v in Vars: FOLang.update({(v if i==10 else v+"_"+str(i)):(0,) for i in range(11)})
+
 # Constant operation symbols
 Cons="c"; Cond="d"; Iden="1"; Zero="0"; Bot="\\bot"; Top="\\top"
 
@@ -126,12 +146,24 @@ symbol("[").nulld = nulld
 symbol("]")
 symbol("(end)")
 
-for st in VAR|CONST: symbol(st)
-for t in PREFIX: prefix(t[0],t[1])
-for t in POSTFIX: postfix(t[0],t[1])
-for t in INFIX: infix(t[0],t[1])
-for st in VAR:
-    for t in QUANT: prefix(t[0]+" "+st,t[1])
+for s in FOLang.keys():
+    if FOLang[s][0]==0: symbol(s)
+    elif FOLang[s][0]<=5: infix(s,FOLang[s][1])
+    elif FOLang[s][0]<=6:
+        for v in Vars:
+            prefix(s+" "+v,FOLang[s][1])
+            for i in range(10):
+                prefix(s+" "+v+"_"+str(i),FOLang[s][1])
+    elif FOLang[s][0]<=12: infix(s,FOLang[s][1])
+    elif FOLang[s][0]<=13: prefix(s,FOLang[s][1])
+    elif FOLang[s][0]<=14: postfix(s,FOLang[s][1])
+
+#for st in VAR|CONST: symbol(st)
+#for t in PREFIX: prefix(t[0],t[1])
+#for t in POSTFIX: postfix(t[0],t[1])
+#for t in INFIX: infix(t[0],t[1])
+#for st in VAR:
+#    for t in QUANT: prefix(t[0]+" "+st,t[1])
 
 def tokenize(st):
     i = 0

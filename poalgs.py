@@ -148,15 +148,15 @@ symbol("(end)")
 
 for s in FOLang.keys():
     if FOLang[s][0]==0: symbol(s)
-    elif FOLang[s][0]<=5: infix(s,FOLang[s][1])
+    elif FOLang[s][0]<=5: infix(s,FOLang[s][0])
     elif FOLang[s][0]<=6:
         for v in Vars:
-            prefix(s+" "+v,FOLang[s][1])
+            prefix(s+" "+v,FOLang[s][0])
             for i in range(10):
-                prefix(s+" "+v+"_"+str(i),FOLang[s][1])
-    elif FOLang[s][0]<=12: infix(s,FOLang[s][1])
-    elif FOLang[s][0]<=13: prefix(s,FOLang[s][1])
-    elif FOLang[s][0]<=14: postfix(s,FOLang[s][1])
+                prefix(s+" "+v+"_"+str(i),FOLang[s][0])
+    elif FOLang[s][0]<=12: infix(s,FOLang[s][0])
+    elif FOLang[s][0]<=13: prefix(s,FOLang[s][0])
+    elif FOLang[s][0]<=14: postfix(s,FOLang[s][0])
 
 #for st in VAR|CONST: symbol(st)
 #for t in PREFIX: prefix(t[0],t[1])

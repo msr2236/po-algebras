@@ -316,6 +316,7 @@ def uc2p9(uc):
 
 
 def check(structure,FOformula_list,info=False):
+  from provers import prover9
   for st in FOformula_list:
     li = prover9(structure.diagram(""),[st],1000,0,structure.cardinality,one=True)
     if li!=[]:
@@ -324,6 +325,7 @@ def check(structure,FOformula_list,info=False):
   return True #li==[]
 
 def show(A):
+  from provers import m4diag
   li = A if type(A)==list else [A]
   if "+" in li[0].operations.keys():
     m4diag(li,"+")

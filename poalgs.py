@@ -1,7 +1,7 @@
 # Signature for input and output (the LaTeX symbols can be changed to agree with other conventions)
 
 from IPython.display import display, Math
-from provers import prover9, m4diag
+from provers import *
 import time
 
 FOLang = { #Constant operation symbols
@@ -159,13 +159,6 @@ for s in FOLang.keys():
     elif FOLang[s][0]<=13: prefix(s,FOLang[s][0])
     elif FOLang[s][0]<=14: postfix(s,FOLang[s][0])
 
-#for st in VAR|CONST: symbol(st)
-#for t in PREFIX: prefix(t[0],t[1])
-#for t in POSTFIX: postfix(t[0],t[1])
-#for t in INFIX: infix(t[0],t[1])
-#for st in VAR:
-#    for t in QUANT: prefix(t[0]+" "+st,t[1])
-
 def tokenize(st):
     i = 0
     while i<len(st):
@@ -316,7 +309,6 @@ def uc2p9(uc):
 
 
 def check(structure,FOformula_list,info=False):
-  from provers import prover9
   for st in FOformula_list:
     li = prover9(structure.diagram(""),[st],1000,0,structure.cardinality,one=True)
     if li!=[]:
@@ -325,7 +317,6 @@ def check(structure,FOformula_list,info=False):
   return True #li==[]
 
 def show(A):
-  from provers import m4diag
   li = A if type(A)==list else [A]
   if "+" in li[0].operations.keys():
     m4diag(li,"+")

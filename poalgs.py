@@ -309,6 +309,7 @@ def uc2p9(uc):
 
 
 def check(structure,FOformula_list,info=False):
+  if type(FOformula_list)==str: FOformula_list=[FOformula_list]
   for st in FOformula_list:
     li = prover9(structure.diagram(""),[st],1000,0,structure.cardinality,one=True)
     if li!=[]:

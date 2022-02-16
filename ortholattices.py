@@ -1,3 +1,5 @@
+from provers import Model
+
 O=[
 Model(cardinality = 6, index = 0, operations = {
 "+":[

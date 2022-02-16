@@ -311,7 +311,13 @@ def uc2p9(uc):
 def check(structure,FOformula_list,info=False):
   if type(FOformula_list)==str: FOformula_list=[FOformula_list]
   for st in FOformula_list:
-    li = prover9(structure.diagram(""),[st],1000,0,structure.cardinality,one=True)
+    lt = []
+    if "<=" in st:
+      if "+" in st: lt = ["x<=y <-> x+y=y"]
+      if "*" in st: lt = ["x<=y <-> x*y=x"]
+      if "v" in st: lt = ["x<=y <-> x v y=y"]
+      if "^" in st: lt = ["x<=y <-> x^y=x"]
+    li = prover9(structure.diagram("")+lt,[st],1000,0,structure.cardinality,one=True)
     if li!=[]:
       if info: return li+[st+" fails"]
       return False

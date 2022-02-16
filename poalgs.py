@@ -230,7 +230,7 @@ def parse(str): # e.g., t = parse(r"(p\circ q)\lor \mathbf t")
     token = next()
     return expression()
 
-def show(A, info=True): # display a (list of) formula(s)
+def showformula(A, info=True): # display a (list of) formula(s)
   st = A if type(A)==str else repr(A)
   if info==True: display(Math(Macros+st))
 
@@ -312,3 +312,19 @@ def smallmembers(cl): #return list of small algebras of the class cl
 
 def uc2p9(uc):
     return [(f"{i}<={j}" if j in uc[i] else f"-({i}<={j})") for i in uc for j in uc]
+
+
+def check(structure,FOformula_list,info=False):
+  for st in FOformula_list:
+    li = prover9(structure.diagram(""),[st],1000,0,structure.cardinality,one=True)
+    if li!=[]:
+      if info: return li+[st+" fails"]
+      return False
+  return True #li==[]
+
+def show(A):
+  li = A if type(A)==list else [A]
+  if "+" in li[0].operations.keys():
+    m4diag(li,"+")
+  else:
+    m4diag(li)

@@ -618,6 +618,54 @@ def show(li,symbols="<= +", unaryRel=""):
         st+=" &nbsp; "
     display_html(st,raw=True)
 
+def is_separated(G):
+    for i in range(len(G)):
+        for j in range(i+1,len(G)):
+            if set(G[i])==set(G[j]): return False
+    return True
+
+def polar(G,X):
+    if len(X)==0: return set(range(len(G)))
+    return set.intersection(*[set(G[x]) for x in X])
+
+def cl(G,x):
+    if len(G[x])==0: return set(range(len(G)))
+    return set.intersection(*[set(G[y]) for y in G[x]])
+
+def is_reduced(G):
+    # check cl(cl(x)-{x}) is a proper subset of cl(x)
+    for x in range(len(G)):
+        c = cl(G,x)
+        if polar(G,polar(G,c-set([x])))==c: return False
+    return True
+
+def gclosed_sets(G):
+    # compute the closed sets of a reduced graph (does not work for digraphs)
+    # calculate polars of singletons and close under intersections
+    clist = [frozenset(range(len(G)))]+[frozenset(G[x]) for x in range(len(G))]
+    cset = set(clist)
+    i = 1
+    while i < len(clist):
+        j = 0
+        while j < i:
+            c = clist[i].intersection(clist[j])
+            if not(c in cset):
+                cset = cset.union([c])
+                clist.append(c)
+            j += 1
+        i += 1
+    return sorted(clist, key=lambda x: len(x))#[list(x) for x in clist]
+
+def GaloisLattice(G):
+    cs = gclosed_sets(G)
+    leq = [[cs[i] <= cs[j] for i in range(len(cs))] for j in range(len(cs))]
+    return Model(len(cs),relations={"<=":leq})
+
+def DeMorganLattice(G):
+    cs = gclosed_sets(G)
+    leq = [[cs[i] <= cs[j] for j in range(len(cs))] for i in range(len(cs))]
+    dmMap = [cs.index(polar(G,cs[i])) for i in range(len(cs))]
+
 from graphviz import Graph
 from IPython.display import display_html
 def diagram(g):

@@ -1,4 +1,4 @@
-from provers import Model
+from poalgs import Model
 
 O=[
 Model(cardinality = 6, index = 0, operations = {
@@ -214,8 +214,7 @@ Model(cardinality = 18, index = 12, operations = {
 [17, 5,7,10,7, 5,9,7,9,9,10,11,12,13,10,15,13,17]], "'":[9, 10, 11, 12,
 13, 14, 15, 16, 17, 0, 1, 2, 3, 4, 5, 6, 7, 8]})]
 
-H=[
-Model(cardinality = 6, index = 0, operations = {"'":[1, 0, 3, 2, 5, 4], 
+H = Model(cardinality = 6, index = 0, operations = {"'":[1, 0, 3, 2, 5, 4], 
 "+":[
 [0,1,2,3,4,5],
 [1,1,1,1,1,1],
@@ -229,7 +228,7 @@ Model(cardinality = 6, index = 0, operations = {"'":[1, 0, 3, 2, 5, 4],
 [0,2,2,0,0,2],
 [0,3,0,3,4,0],
 [0,4,0,4,4,0],
-[0,5,2,0,0,5]]})]
+[0,5,2,0,0,5]]})
 
 M4=O[0]
 

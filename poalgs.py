@@ -237,10 +237,10 @@ def showformula(A, info=True): # display a (list of) formula(s)
 
 ########### end of parser #####################################
 
-def vars(A):
+def formulavars(A):
   if A.a==[]: return set([A.id] if A.id in Vars else [])
-  if len(A.a)==1: return vars(A.a[0])
-  return vars(A.a[0]) | vars(A.a[1])
+  if len(A.a)==1: return formulavars(A.a[0])
+  return formulavars(A.a[0]) | formulavars(A.a[1])
 
 def pythonout(A): #output formula A in python format
   symbs = ["=","\\implies","\\iff","\\text{ and }","\\text{ or }"]
@@ -261,7 +261,7 @@ def check(A,formula,info=False):
   c=A.operations["'"]
   fm=parse(formula)
   py=pythonout(fm)
-  va=sorted(vars(fm))
+  va=sorted(formulavars(fm))
   #if info: print(py,va)
   evalst = "[("+",".join(va)+")"+"".join(" for "+v+" in B" for v in va)+' if not '+py+']'
   if info: print(evalst)

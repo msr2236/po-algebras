@@ -1,7 +1,7 @@
 # Signature for input and output (the LaTeX symbols can be changed to agree with other conventions)
 
 from IPython.display import display, Math
-from provers import *
+#from provers import *
 import time
 
 FOLang = { #Constant operation symbols

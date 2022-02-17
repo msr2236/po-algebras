@@ -617,3 +617,20 @@ def show(li,symbols="<= +", unaryRel=""):
                 st+=hasse_diagram(x.relations[t], True, s[-1]=='d',uR)._repr_svg_()+"&nbsp; &nbsp; &nbsp; "
         st+=" &nbsp; "
     display_html(st,raw=True)
+
+from graphviz import Graph
+from IPython.display import display_html
+def diagram(g):
+  P = Graph(engine='neato')
+  P.attr('node', shape='circle', width='.15', height='.15', fixedsize='true', fontsize='10')
+  P.edges([(str(i),str(j)) for i in range(len(g)) for j in g[i] if i>j])
+  return P
+
+def showg(li): #display an undirected graph
+  i = 0
+  st = ""
+  for x in li:
+    i+=1
+    st+=str(i)
+    st+=diagram(x)._repr_svg_()+"&nbsp; &nbsp; &nbsp; &nbsp; "
+  display_html(st,raw=True)

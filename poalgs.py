@@ -323,9 +323,45 @@ def check(structure,FOformula_list,info=False):
       return False
   return True #li==[]
 
-def show(A):
-  li = A if type(A)==list else [A]
-  if "+" in li[0].operations.keys():
-    m4diag(li,"+")
-  else:
-    m4diag(li)
+
+import networkx as nx
+from graphviz import Graph
+from IPython.display import display_html
+def hasse_diagram(op,rel,dual,unary=[]):
+    A = range(len(op))
+    G = nx.DiGraph()
+    if rel:
+        G.add_edges_from([(x,y) for x in A for y in A if (op[y][x] if dual else op[x][y]) and x!=y])
+    else: 
+        G.add_edges_from([(x,y) for x in A for y in A if op[x][y]==(y if dual else x) and x!=y])
+    try:
+        G = nx.algorithms.dag.transitive_reduction(G)
+    except:
+        pass
+    P = Graph()
+    P.attr('node', shape='circle', width='.15', height='.15', fixedsize='true', fontsize='10')
+    for x in A: P.node(str(x), color='red' if unary[x] else 'black')
+    P.edges([(str(x[0]),str(x[1])) for x in G.edges])
+    return P
+
+def show(li,symbols="<= +", unaryRel=""):
+    if type(li)!=list: li = [li]
+    # use graphviz to display a mace4 structure as a diagram
+    # symbols is a list of binary symbols that define a poset or graph
+    # unaryRel is a unary relation symbol that is displayed by red nodes
+    i = 0
+    sy = symbols.split(" ")
+    #print(sy)
+    st = ""
+    for x in li:
+        i+=1
+        st+=str(i)
+        uR = x.relations[unaryRel] if unaryRel!="" else [0]*x.cardinality
+        for s in sy:
+            t = s[:-1] if s[-1]=='d' else s
+            if t in x.operations.keys():
+                st+=hasse_diagram(x.operations[t],False,s[-1]=='d',uR)._repr_svg_()+"&nbsp; &nbsp; &nbsp; "
+            elif t in x.relations.keys():
+                st+=hasse_diagram(x.relations[t], True, s[-1]=='d',uR)._repr_svg_()+"&nbsp; &nbsp; &nbsp; "
+        st+=" &nbsp; "
+    display_html(st,raw=True)

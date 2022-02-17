@@ -54,6 +54,13 @@ QUANT = [(All,5),(Exists,5)]
 # can add further \newcommand macros in the string below
 Macros=""  #r"\newcommand{\coimp}{-\!\raisebox{.5pt}{\scriptsize<}\,}"
 
+pysym={"u":"u","v":"v","w":"w","x":"x","y":"y","z":"z","c":"c","d":"d","1":"1","0":"0","\\bot":"b","\\top":"t","f":"f","g":"g",
+       "\\sim":"sim","-":"mi","\\diamond":"dd","\\box":"bx","\\triangleright":"tr","\\triangleleft":"tl","\\vartriangleright":"vtr","\\vartriangleleft":"vtl",
+       "^*":"star","^{-1}":"i","\\smallsmile":"conv","'":"c","\\wedge":"mt","\\vee":"jn","\\cdot":"cd","/":"rd","\\backslash":"ld",
+       "\\odot":"odot","*":"m","+":"j","\\oplus":"op","\\ominus":"om","\\circ":"ci","\\to":"to","\\leftarrow":"ri",
+       "\\le":"le","\\ge":"ge","=":"==","\\ne":"!=","\\text{ and }":" and ","\\text{ or }":" or ",
+       "\\implies":" <= ","\\iff":" == ","\\forall":"all","\\exists":"any"}
+
 p9sym={"u":"u","v":"v","w":"w","x":"x","y":"y","z":"z","c":"c","d":"d","1":"1","0":"0","\\bot":"b","\\top":"t","f":"f","g":"g",
        "\\sim":"~","-":"-","\\diamond":"dd","\\box":"bx","\\triangleright":" r ","\\triangleleft":" t ","\\vartriangleright":"tr","\\vartriangleleft":"tl",
        "^*":"'","^{-1}":"i","\\smallsmile":"'","'":"'","\\wedge":"^","\\vee":" v ","\\cdot":"*","/":"/","\\backslash":"\ ",
@@ -230,17 +237,37 @@ def showformula(A, info=True): # display a (list of) formula(s)
 
 ########### end of parser #####################################
 
-import re
+def vars(A):
+  if A.a==[]: return set([A.id] if A.id in Vars else [])
+  if len(A.a)==1: return vars(A.a[0])
+  return vars(A.a[0]) | vars(A.a[1])
 
-def p9out(A): #output formula A in Prover9 format
-  if A.a==[]: return p9sym[A.id]
-  if A.id[:7] in ["\\forall","\\exists"]:
-    return p9sym[A.id[:7]]+" "+A.id[8:]+"("+p9out(A.a[0])+")"
-  if len(A.a)==1:
-    #if symbol_table[p9sym[A.id]].lbp!=12:
-      return p9sym[A.id]+"("+p9out(A.a[0])+")"
-    #return "("+p9out(A.a[0])+")"+p9sym[A.id]
-  return "("+p9out(A.a[0])+p9sym[A.id]+p9out(A.a[1])+")"
+def pythonout(A): #output formula A in python format
+  symbs = ["=","\\implies","\\iff","\\text{ and }","\\text{ or }"]
+  if A.a==[]: return pysym[A.id]
+  if len(A.a)==1: return pysym[A.id]+"["+pythonout(A.a[0])+"]"
+  if A.id in symbs:
+    st0 = "("+pythonout(A.a[0])+")" if A.a[0].id in symbs else pythonout(A.a[0])
+    st1 = "("+pythonout(A.a[1])+")" if A.a[1].id in symbs else pythonout(A.a[1])
+    return st0+pysym[A.id]+st1
+  if A.id == "\\le": return "j["+pythonout(A.a[0])+"]["+pythonout(A.a[1])+"]=="+pythonout(A.a[1])
+  if A.id == "\\ge": return "j["+pythonout(A.a[0])+"]["+pythonout(A.a[1])+"]=="+pythonout(A.a[0])
+  return pysym[A.id]+"["+pythonout(A.a[0])+"]["+pythonout(A.a[1])+"]"
+
+def check(A,formula,info=False):
+  B=range(A.cardinality)
+  j=A.operations["+"]
+  m=A.operations["*"]
+  c=A.operations["'"]
+  fm=parse(formula)
+  py=pythonout(fm)
+  va=sorted(vars(fm))
+  #if info: print(py,va)
+  evalst = "[("+",".join(va)+")"+"".join(" for "+v+" in B" for v in va)+' if not '+py+']'
+  if info: print(evalst)
+  li = eval(evalst,{'B':B,'m':m,'j':j,'c':c})
+  if info: return li
+  return li==[]
 
 po=["x<=x","x<=y & y<=x -> x=y","x<=y & y<=z -> x<=z"]
 msl=["(x^y)^z=x^(y^z)","x^y=y^x","x^x=x","x^y=x<->x<=y"]
@@ -308,20 +335,20 @@ def uc2p9(uc):
     return [(f"{i}<={j}" if j in uc[i] else f"-({i}<={j})") for i in uc for j in uc]
 
 
-def check(structure,FOformula_list,info=False):
-  if type(FOformula_list)==str: FOformula_list=[FOformula_list]
-  for st in FOformula_list:
-    lt = []
-    if "<=" in st:
-      if "+" in st: lt = ["x<=y <-> x+y=y"]
-      if "*" in st: lt = ["x<=y <-> x*y=x"]
-      if "v" in st: lt = ["x<=y <-> x v y=y"]
-      if "^" in st: lt = ["x<=y <-> x^y=x"]
-    li = prover9(structure.diagram("")+lt,[st],1000,0,structure.cardinality,one=True)
-    if li!=[]:
-      if info: return li+[st+" fails"]
-      return False
-  return True #li==[]
+#def check(structure,FOformula_list,info=False):
+#  if type(FOformula_list)==str: FOformula_list=[FOformula_list]
+#  for st in FOformula_list:
+#    lt = []
+#    if "<=" in st:
+#      if "+" in st: lt = ["x<=y <-> x+y=y"]
+#      if "*" in st: lt = ["x<=y <-> x*y=x"]
+#      if "v" in st: lt = ["x<=y <-> x v y=y"]
+#      if "^" in st: lt = ["x<=y <-> x^y=x"]
+#    li = prover9(structure.diagram("")+lt,[st],1000,0,structure.cardinality,one=True)
+#    if li!=[]:
+#      if info: return li+[st+" fails"]
+#      return False
+#  return True #li==[]
 
 def opstr(m):  # convert 2-dim list to a compact string for display
     nr = len(m)

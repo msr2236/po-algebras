@@ -558,7 +558,7 @@ class Model():
 
     def product(self, B, info=False):
         base = [[x,y] for x in range(self.cardinality) for y in range (B.cardinality)]
-        if info: print base
+        if info: print(base)
         op = {}
         for f in B.operations:
             fA = self.operations[f]

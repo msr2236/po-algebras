@@ -1,4 +1,5 @@
-from poalgs import Model
+#from poalgs import Model
+from provers import Model
 
 O=[
 Model(cardinality = 6, index = 0, operations = {
@@ -568,3 +569,31 @@ L=sorted(L,key=lambda x: x.index)
 
 M3=L[0]
 N=L[16]
+
+def product(self, B, info=False):
+        base = [[x,y] for x in range(self.cardinality) for y in range (B.cardinality)]
+        if info: print(base)
+        op = {}
+        for f in B.operations:
+            fA = self.operations[f]
+            fB = B.operations[f]
+            if type(fB)==list:
+                if type(fB[0])==list:
+                    op[f] = [[base.index([fA[p[0]][q[0]],fB[p[1]][q[1]]])
+                               for p in base] for q in base]
+                else:
+                    op[f] = [base.index([fA[p[0]],fB[p[1]]]) for p in base]
+            else:
+                op[f] = base.index([fA,fB])
+        rel = {}
+        for r in B.relations:
+            rA = self.relations[r]
+            rB = B.relations[r]
+            if type(rB[0])==list:
+                rel[r] = [[1 if rA[p[0]][q[0]]==1 and rB[p[1]][q[1]]==1 else 0
+                             for p in base] for q in base]
+            else:
+                rel[r] =[1 if rA[p[0]]==1 and rB[p[1]]==1 else 0 for p in base]
+        return Model(len(base),None,op,rel)
+
+Model.product = product

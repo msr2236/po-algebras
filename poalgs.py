@@ -279,28 +279,6 @@ ba=dlat+["x'v x=t","x'^x=b"]
 uo=[]
 axioms=[po,jsl,msl,lat,dlat,to,ba,uo]
 
-def fd(cl,info=True,new_ax=None):
-    try:
-        ax = [p9out(parse(e)) for e in fulldefinition(cl)]
-    except:
-        print("############### Error, skipping", cl)
-        return []
-    ax = [(x[1:-1] if x[0]=='(' and x[-1]==')' else x) for x in ax]
-    ch_axioms = axioms[fam[cl]] if new_ax==None else new_ax
-    if info: 
-        print(ch_axioms+ax)
-    return ch_axioms+ax
-
-def finespectrum(cl,n,info=True,new_ax=None): 
-  # call Prover9 on the translated full definition of cl and find the fine spectrum up to n
-    if info: print(cl)
-    ax = fd(cl,new_ax)
-    if ax==[]: return []
-    t = time.time()
-    a = [[1]]+[prover9(ch_axioms+ax,[],10000,10000,k,options=opts) for k in range(2,n+1)]
-    if info: print("Time: {:.2f}".format(time.time()-t), "sec")
-    return [len(x) for x in a]
-
 def tz_posets(st): #return list of tikz diagrams
     return re.findall(r"(\\begin{tikzpicture}\[xscale=1.*?\\end{tikzpicture}\n)",latex_st,flags=re.DOTALL)
 
@@ -319,17 +297,6 @@ def lc2uc(lc):
         for y in lc[x]:
             if y in uc: uc[y].append(x)
     return uc
-
-def smallmembers(cl): #return list of small algebras of the class cl
-    sm=re.search(r"\\begin{smallmembers}(.*?)\\end{smallmembers}",section(cl),flags=re.DOTALL)
-    if sm==None: return 'none'
-    li=re.findall(r"\\begin{tikzpicture}(.*?)\\end{tikzpicture}",sm.group(1),flags=re.DOTALL)
-    pl=[list(reversed(re.findall(r"\\node\((.*?);", s,flags=re.DOTALL))) for s in li]
-    uc=[{int(s[:s.index(")")]):[int(y) for y in re.findall(r"edge.*?\((.*?)\)",s)] for s in x} for x in pl]
-    xy=[{int(s[:s.index(")")]):(re.search(r"\((.*?),",s).group(1), re.search(r",(.*?)\)",s).group(1)) for s in x} for x in pl]
-    xy=[{i:tuple((int(z) if z.find(".")==-1 else float(z)) for z in xy[n][i]) for i in xy[n]} for n in range(len(pl))]
-    c=[[int(s[:s.index(")")]) for s in x if s.find("label=")!=-1] for x in pl]
-    return [({'uc':uc[n], 'xy':xy[n]} if c[n]==[] else {'uc':uc[n], 'xy':xy[n], 'c':c[n][0]}) for n in range(len(pl))]
 
 def uc2p9(uc):
     return [(f"{i}<={j}" if j in uc[i] else f"-({i}<={j})") for i in uc for j in uc]
@@ -588,6 +555,32 @@ class Model():
         if len(m) == 0:
             return False
         return m[0].operations['h'][self.cardinality:]
+
+    def product(self, B, info=False):
+        base = [[x,y] for x in range(self.cardinality) for y in range (B.cardinality)]
+        if info: print base
+        op = {}
+        for f in B.operations:
+            fA = self.operations[f]
+            fB = B.operations[f]
+            if type(fB)==list:
+                if type(fB[0])==list:
+                    op[f] = [[base.index([fA[p[0]][q[0]],fB[p[1]][q[1]]])
+                               for p in base] for q in base]
+                else:
+                    op[f] = [base.index([fA[p[0]],fB[p[1]]]) for p in base]
+            else:
+                op[f] = base.index([fA,fB])
+        rel = {}
+        for r in B.relations:
+            rA = self.relations[r]
+            rB = B.relations[r]
+            if type(rB[0])==list:
+                rel[r] = [[1 if rA[p[0]][q[0]]==1 and rB[p[1]][q[1]]==1 else 0
+                             for p in base] for q in base]
+            else:
+                rel[r] =[1 if rA[p[0]]==1 and rB[p[1]]==1 else 0 for p in base]
+        return Model(len(base),None,op,rel)
 
     @staticmethod
     def mace4format(A):

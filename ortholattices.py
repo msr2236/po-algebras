@@ -1,5 +1,5 @@
 #from poalgs import Model
-from provers import Model
+from provers import Model, prover9
 
 O=[
 Model(cardinality = 6, index = 0, operations = {

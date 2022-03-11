@@ -159,23 +159,6 @@ Model(cardinality = 12, index = 6, operations = {
 [0, 9,9,0,0,9, 9,0, 0,9, 9, 0],
 [0,10,9,0,0,9,10,0, 0,9,10, 0],
 [0,11,0,7,7,0, 0,7,11,0, 0,11]], "'":[1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10]}),
-Model(cardinality = 14, index = 289, operations = {
-"+":[
-[ 0,1,2,3,4, 5,6, 7,8, 9,10,11,12,13],
-[ 1,1,1,1,1, 1,1, 1,1, 1, 1, 1, 1, 1],
-[ 2,1,2,1,1, 6,6, 1,1, 2, 1, 6, 6, 1],
-[ 3,1,1,3,1, 8,1, 3,8, 1, 8, 1, 1, 8],
-[ 4,1,1,1,4, 1,1, 4,1, 4, 1, 4, 1, 4],
-[ 5,1,6,8,1, 5,6,10,8,12,10, 6,12, 8],
-[ 6,1,6,1,1, 6,6, 1,1, 6, 1, 6, 6, 1],
-[ 7,1,1,3,4,10,1, 7,8, 4,10, 4, 1,13],
-[ 8,1,1,8,1, 8,1, 8,8, 1, 8, 1, 1, 8],
-[ 9,1,2,1,4,12,6, 4,1, 9, 1,11,12, 4],
-[10,1,1,8,1,10,1,10,8, 1,10, 1, 1, 8],
-[11,1,6,1,4, 6,6, 4,1,11, 1,11, 6, 4],
-[12,1,6,1,1,12,6, 1,1,12, 1, 6,12, 1],
-[13,1,1,8,4, 8,1,13,8, 4, 8, 4, 1,13]], "'":[1, 0, 3, 2, 5, 4, 7, 6, 9,
-8, 11, 10, 13, 12]}), 
 Model(cardinality = 14, index = 310, operations = {
 "+":[
 [ 0,1,2,3, 4,5,6, 7,8, 9,10,11,12,13],
@@ -193,6 +176,23 @@ Model(cardinality = 14, index = 310, operations = {
 [12,1,1,6,12,1,6, 1,1,12, 1, 6,12, 1],
 [13,1,5,8, 8,5,1,13,8, 5, 8, 5, 1,13]], "'":[1, 0, 3, 2, 5, 4, 7, 6, 9,
 8, 11, 10, 13, 12]}),
+Model(cardinality = 14, index = 289, operations = {
+"+":[
+[ 0,1,2,3,4, 5,6, 7,8, 9,10,11,12,13],
+[ 1,1,1,1,1, 1,1, 1,1, 1, 1, 1, 1, 1],
+[ 2,1,2,1,1, 6,6, 1,1, 2, 1, 6, 6, 1],
+[ 3,1,1,3,1, 8,1, 3,8, 1, 8, 1, 1, 8],
+[ 4,1,1,1,4, 1,1, 4,1, 4, 1, 4, 1, 4],
+[ 5,1,6,8,1, 5,6,10,8,12,10, 6,12, 8],
+[ 6,1,6,1,1, 6,6, 1,1, 6, 1, 6, 6, 1],
+[ 7,1,1,3,4,10,1, 7,8, 4,10, 4, 1,13],
+[ 8,1,1,8,1, 8,1, 8,8, 1, 8, 1, 1, 8],
+[ 9,1,2,1,4,12,6, 4,1, 9, 1,11,12, 4],
+[10,1,1,8,1,10,1,10,8, 1,10, 1, 1, 8],
+[11,1,6,1,4, 6,6, 4,1,11, 1,11, 6, 4],
+[12,1,6,1,1,12,6, 1,1,12, 1, 6,12, 1],
+[13,1,1,8,4, 8,1,13,8, 4, 8, 4, 1,13]], "'":[1, 0, 3, 2, 5, 4, 7, 6, 9,
+8, 11, 10, 13, 12]}), 
 Model(cardinality = 18, index = 12, operations = {
 "+":[
 [ 0, 1,2, 3,4, 5,6,7,8,9,10,11,12,13,14,15,16,17],
@@ -597,3 +597,40 @@ def product(self, B, info=False):
         return Model(len(base),None,op,rel)
 
 Model.product = product
+
+def check(structure,FOformula_list,info=False):
+  if type(FOformula_list)==str: FOformula_list=[FOformula_list]
+  for st in FOformula_list:
+    lt = []
+    if "<=" in st:
+      if "+" in st: lt = ["x<=y <-> x+y=y"]
+      if "*" in st: lt = ["x<=y <-> x*y=x"]
+      if "v" in st: lt = ["x<=y <-> x v y=y"]
+      if "^" in st: lt = ["x<=y <-> x^y=x"]
+    li = prover9(structure.diagram("")+lt,[st],1000,0,structure.cardinality,one=True)
+    if li!=[]:
+      if info: return li+[st+" fails"]
+      return False
+  return True #li==[]
+
+def show(li,symbols="<= +", unaryRel=""):
+    if type(li)!=list: li = [li]
+    # use graphviz to display a mace4 structure as a diagram
+    # symbols is a list of binary symbols that define a poset or graph
+    # unaryRel is a unary relation symbol that is displayed by red nodes
+    i = 0
+    sy = symbols.split(" ")
+    #print(sy)
+    st = ""
+    for x in li:
+        i+=1
+        st+=str(i)
+        uR = x.relations[unaryRel] if unaryRel!="" else [0]*x.cardinality
+        for s in sy:
+            t = s[:-1] if s[-1]=='d' else s
+            if t in x.operations.keys():
+                st+=hasse_diagram(x.operations[t],False,s[-1]=='d',uR)._repr_svg_()+"&nbsp; &nbsp; &nbsp; "
+            elif t in x.relations.keys():
+                st+=hasse_diagram(x.relations[t], True, s[-1]=='d',uR)._repr_svg_()+"&nbsp; &nbsp; &nbsp; "
+        st+=" &nbsp; "
+    display_html(st,raw=True)

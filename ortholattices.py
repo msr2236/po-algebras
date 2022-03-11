@@ -598,6 +598,26 @@ def product(self, B, info=False):
 
 Model.product = product
 
+import networkx as nx
+from graphviz import Graph
+from IPython.display import display_html
+def hasse_diagram(op,rel,dual,unary=[]):
+    A = range(len(op))
+    G = nx.DiGraph()
+    if rel:
+        G.add_edges_from([(x,y) for x in A for y in A if (op[y][x] if dual else op[x][y]) and x!=y])
+    else: 
+        G.add_edges_from([(x,y) for x in A for y in A if op[x][y]==(y if dual else x) and x!=y])
+    try:
+        G = nx.algorithms.dag.transitive_reduction(G)
+    except:
+        pass
+    P = Graph()
+    P.attr('node', shape='circle', width='.15', height='.15', fixedsize='true', fontsize='10')
+    for x in A: P.node(str(x), color='red' if unary[x] else 'black')
+    P.edges([(str(x[0]),str(x[1])) for x in G.edges])
+    return P
+
 def check(structure,FOformula_list,info=False):
   if type(FOformula_list)==str: FOformula_list=[FOformula_list]
   for st in FOformula_list:

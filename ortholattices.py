@@ -643,8 +643,8 @@ def show(li,symbols="<= +", unaryRel=""):
     #print(sy)
     st = ""
     for x in li:
-        i+=1
         st+=str(i)
+        i+=1
         uR = x.relations[unaryRel] if unaryRel!="" else [0]*x.cardinality
         for s in sy:
             t = s[:-1] if s[-1]=='d' else s

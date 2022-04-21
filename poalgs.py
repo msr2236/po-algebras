@@ -582,6 +582,25 @@ class Model():
                 rel[r] =[1 if rA[p[0]]==1 and rB[p[1]]==1 else 0 for p in base]
         return Model(len(base),None,op,rel)
 
+    def uacalc_format(self, name):
+        """
+        display a model in UAcalc format (uacalc.org)
+        """
+        st = '<?xml version="1.0"?>\n<algebra>\n  <basicAlgebra>\n    <algName>'+\
+             name+(str(self.index) if self.index!=None else '')+\
+             '</algName>\n    <cardinality>'+str(self.cardinality)+\
+             '</cardinality>\n    <operations>\n'
+        for x in self.operations:
+            st += '      <op>\n        <opSymbol>\n          <opName>'+\
+                  x+'</opName>\n'
+            oplst = type(self.operations[x]) == list
+            if oplst and type(self.operations[x][0]) == list:
+                st += '          <arity>2</arity>\n        </opSymbol>\n        <opTable>\n          <intArray>\n' + xmlopstr(self.operations[x])
+            else:
+                st += '          <arity>'+('1' if oplst else '0')+'</arity>\n        </opSymbol>\n        <opTable>\n          <intArray>\n            <row>' + (str(self.operations[x])[1:-1] if oplst else str(self.operations[x]))+'</row>\n'
+            st += '          </intArray>\n        </opTable>\n      </op>\n'
+        return st+'    </operations>\n  </basicAlgebra>\n</algebra>\n'
+
     @staticmethod
     def mace4format(A):
         if A.is_lattice():
@@ -626,8 +645,8 @@ def show(li,symbols="<= +", unaryRel=""):
     #print(sy)
     st = ""
     for x in li:
-        i+=1
         st+=str(i)
+        i+=1
         uR = x.relations[unaryRel] if unaryRel!="" else [0]*x.cardinality
         for s in sy:
             t = s[:-1] if s[-1]=='d' else s

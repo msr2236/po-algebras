@@ -254,7 +254,7 @@ def pythonout(A): #output formula A in python format
   if A.id == "\\ge": return "j["+pythonout(A.a[0])+"]["+pythonout(A.a[1])+"]=="+pythonout(A.a[0])
   return pysym[A.id]+"["+pythonout(A.a[0])+"]["+pythonout(A.a[1])+"]"
 
-def check(A,formula,info=False):
+def checkPy(A,formula,info=False):
   B=range(A.cardinality)
   j=A.operations["+"]
   m=A.operations["*"]

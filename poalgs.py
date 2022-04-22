@@ -263,7 +263,7 @@ def checkPy(A,formula,info=False):
   py=pythonout(fm)
   va=sorted(formulavars(fm))
   #if info: print(py,va)
-  evalst = "[("+",".join(va)+")"+"".join(" for "+v+" in B" for v in va)+' if not '+py+']'
+  evalst = "[("+",".join(va)+")"+"".join(" for "+v+" in B" for v in va)+' if not ('+py+')]'
   if info: print(evalst)
   li = eval(evalst,{'B':B,'m':m,'j':j,'c':c})
   if info: return li
@@ -300,22 +300,6 @@ def lc2uc(lc):
 
 def uc2p9(uc):
     return [(f"{i}<={j}" if j in uc[i] else f"-({i}<={j})") for i in uc for j in uc]
-
-
-#def check(structure,FOformula_list,info=False):
-#  if type(FOformula_list)==str: FOformula_list=[FOformula_list]
-#  for st in FOformula_list:
-#    lt = []
-#    if "<=" in st:
-#      if "+" in st: lt = ["x<=y <-> x+y=y"]
-#      if "*" in st: lt = ["x<=y <-> x*y=x"]
-#      if "v" in st: lt = ["x<=y <-> x v y=y"]
-#      if "^" in st: lt = ["x<=y <-> x^y=x"]
-#    li = prover9(structure.diagram("")+lt,[st],1000,0,structure.cardinality,one=True)
-#    if li!=[]:
-#      if info: return li+[st+" fails"]
-#      return False
-#  return True #li==[]
 
 def opstr(m):  # convert 2-dim list to a compact string for display
     nr = len(m)

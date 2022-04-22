@@ -250,8 +250,8 @@ def pythonout(A): #output formula A in python format
     st0 = "("+pythonout(A.a[0])+")" if A.a[0].id in symbs else pythonout(A.a[0])
     st1 = "("+pythonout(A.a[1])+")" if A.a[1].id in symbs else pythonout(A.a[1])
     return "("+st0+pysym[A.id]+st1+")"
-  if A.id == "\\le": return "j["+pythonout(A.a[0])+"]["+pythonout(A.a[1])+"]=="+pythonout(A.a[1])
-  if A.id == "\\ge": return "j["+pythonout(A.a[0])+"]["+pythonout(A.a[1])+"]=="+pythonout(A.a[0])
+  if A.id == "\\le": return "(j["+pythonout(A.a[0])+"]["+pythonout(A.a[1])+"]=="+pythonout(A.a[1])+")"
+  if A.id == "\\ge": return "(j["+pythonout(A.a[0])+"]["+pythonout(A.a[1])+"]=="+pythonout(A.a[0])+")"
   return pysym[A.id]+"["+pythonout(A.a[0])+"]["+pythonout(A.a[1])+"]"
 
 def checkPy(A,formula,info=False):

@@ -249,7 +249,7 @@ def pythonout(A): #output formula A in python format
   if A.id in symbs:
     st0 = "("+pythonout(A.a[0])+")" if A.a[0].id in symbs else pythonout(A.a[0])
     st1 = "("+pythonout(A.a[1])+")" if A.a[1].id in symbs else pythonout(A.a[1])
-    return st0+pysym[A.id]+st1
+    return "("+st0+pysym[A.id]+st1+")"
   if A.id == "\\le": return "j["+pythonout(A.a[0])+"]["+pythonout(A.a[1])+"]=="+pythonout(A.a[1])
   if A.id == "\\ge": return "j["+pythonout(A.a[0])+"]["+pythonout(A.a[1])+"]=="+pythonout(A.a[0])
   return pysym[A.id]+"["+pythonout(A.a[0])+"]["+pythonout(A.a[1])+"]"
@@ -263,7 +263,7 @@ def checkPy(A,formula,info=False):
   py=pythonout(fm)
   va=sorted(formulavars(fm))
   #if info: print(py,va)
-  evalst = "[("+",".join(va)+")"+"".join(" for "+v+" in B" for v in va)+' if not ('+py+')]'
+  evalst = "[("+",".join(va)+")"+"".join(" for "+v+" in B" for v in va)+' if not '+py+']'
   if info: print(evalst)
   li = eval(evalst,{'B':B,'m':m,'j':j,'c':c})
   if info: return li

@@ -635,9 +635,9 @@ def show(li,symbols="<= +", unaryRel=""):
         for s in sy:
             t = s[:-1] if s[-1]=='d' else s
             if t in x.operations.keys():
-                st+=hasse_diagram(x.operations[t],False,s[-1]=='d',uR)._repr_svg_()+"&nbsp; &nbsp; &nbsp; "
+                st+=hasse_diagram(x.operations[t],False,s[-1]=='d',uR)._repr_image_svg_xml()+"&nbsp; &nbsp; &nbsp; "
             elif t in x.relations.keys():
-                st+=hasse_diagram(x.relations[t], True, s[-1]=='d',uR)._repr_svg_()+"&nbsp; &nbsp; &nbsp; "
+                st+=hasse_diagram(x.relations[t], True, s[-1]=='d',uR)._repr_image_svg_xml()+"&nbsp; &nbsp; &nbsp; "
         st+=" &nbsp; "
     display_html(st,raw=True)
 
@@ -703,5 +703,5 @@ def showg(li): #display an undirected graph
   for x in li:
     i+=1
     st+=str(i)
-    st+=diagram(x)._repr_svg_()+"&nbsp; &nbsp; &nbsp; &nbsp; "
+    st+=diagram(x)._repr_image_svg_xml()+"&nbsp; &nbsp; &nbsp; &nbsp; "
   display_html(st,raw=True)
